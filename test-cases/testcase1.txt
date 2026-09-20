@@ -1,0 +1,22 @@
+Scenario A1: Register with valid details
+  Given I am on the home page
+  When I signup with a unique name and email
+  And I fill in the account information form
+  And I submit the account creation
+  Then I should see "Account Created!"
+  And I should be logged in as that user
+
+Scenario A2: Login with valid credentials
+  Given I have a registered account
+  When I login with the correct email and password
+  Then I should see "Logged in as <name>"
+
+Scenario A3: Login with invalid credentials
+  Given I am on the login page
+  When I login with an incorrect email or password
+  Then I should see the error "Your email or password is incorrect!"
+
+Scenario A4: Logout
+  Given I am logged in
+  When I click Logout
+  Then I should be on the login page
