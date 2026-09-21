@@ -7,42 +7,35 @@ test.describe('Authentication', () =>{
         const user = generateUser();
 
         await page.goto('/');
-        await authPage.signupLoginLink.click();
+        await authPage.navigateToLoginPage();
         await expect(page).toHaveURL(/login/);
 
 
         await authPage.startSignup(user.name, user.email);
+        await authPage.verifyAccountInformationPage();
 
         // Enter Account information 
-
-        await expect(page.getByText('Enter Account Information')).toBeVisible();
-
         await authPage.fillAccountInformation(user);
 
         await authPage.verifyAccountCreated();
-        await authPage.continueButton.click();
+        await authPage.continueAfterAccountCreation();
         await authPage.verifyLoggedInAs(user.name);
+
+        await authPage.deleteAccount();
+        await authPage.verifyAccountDeleted();
 
     })
 
-    test('A2: Login with valid credentials', async ({page, authPage}) => {
-        const user = generateUser();
+    test('A2: Login with valid credentials', async ({page, authPage, registeredUser}) => {
+        
 
-        await page.goto('/');
-        await authPage.signupLoginLink.click();
-        await authPage.startSignup(user.name, user.email);
-        await authPage.fillAccountInformation(user);
-        await authPage.verifyAccountCreated();
-        await authPage.continueButton.click();
-
-        await authPage.logoutLink.click();
-
+        await authPage.logout();
+        await authPage.verifyLoggedOut();
+        
         // Login with valid credentials
 
-        await authPage.login(user.email, user.password);
-
-        // clear account
-        await authPage.deleteAccountLink.click();
+        await authPage.login(registeredUser.email, registeredUser.password);
+        await authPage.verifyLoggedInAs(registeredUser.name);
     })
 
 
@@ -50,32 +43,21 @@ test.describe('Authentication', () =>{
         const user = generateUser();
 
         await page.goto('/');
-        await authPage.signupLoginLink.click();
+        await authPage.navigateToLoginPage();
+        await expect(page).toHaveURL(/login/);
+
 
         await authPage.login(user.email, user.password);
-        await authPage.loginButton.click();
-
         await authPage.verifyInvalidLoginError();
 
     })
 
-    test('A4: Logout account', async ({page, authPage})=>{
-        const user = generateUser();
+    test('A4: Logout account', async ({page, authPage, registeredUser})=>{
+       
+        await authPage.verifyLoggedInAs(registeredUser.name);
+        await authPage.logout();
 
-        await page.goto('/');
-        await authPage.signupLoginLink.click();
-        await authPage.startSignup(user.name, user.email);
-        await authPage.fillAccountInformation(user);
-        await authPage.verifyAccountCreated();
-        await authPage.continueButton.click();
+        await authPage.verifyLoggedOut();
 
-        await authPage.logoutLink.click();
-
-
-        // login again and logout
-
-        await authPage.login(user.email, user.password);
-
-        await authPage.deleteAccountLink.click();
     });
 })
