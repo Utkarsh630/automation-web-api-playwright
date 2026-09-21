@@ -67,7 +67,7 @@ export class AuthPage extends BasePage {
     }
 
     get loginErrorMessage(): Locator {
-        return this.page.getByText('Your email or password is incorrect!');
+        return this.page.locator("form[action='/login'] p");
     }
 
 
@@ -86,6 +86,10 @@ export class AuthPage extends BasePage {
     }
 
     // Actions 
+
+    async navigateToLoginPage(){
+        await this.signupLoginLink.click();
+    }
 
     async startSignup(name: string, email: string){
         await this.signupNameInput.fill(name);
@@ -121,6 +125,20 @@ export class AuthPage extends BasePage {
         await this.loginButton.click();
     }
 
+    async deleteAccount(){
+        await this.deleteAccountLink.click();
+    }
+
+    async logout(){
+        await this.logoutLink.click();
+    }
+
+    async continueAfterAccountCreation(){
+        await this.continueButton.click();
+    }
+    
+// Assertions
+
     async verifyAccountCreated(){
         await expect(this.accountCreatedMessage).toBeVisible();
     }
@@ -135,12 +153,17 @@ export class AuthPage extends BasePage {
 
     async verifyInvalidLoginError(){
         await expect(this.loginErrorMessage).toBeVisible();
+        await expect(this.loginErrorMessage).toContainText(/email or password is incorrect/i);
     }
 
     async verifyLoggedOut(){
         await expect(this.signupLoginLink).toBeVisible();
     }
 
+    async verifyAccountInformationPage(){
+        await expect(this.page.getByText('Enter Account Information')).toBeVisible();
+
+    }
 
     private async selectCountry(country: string){
     
